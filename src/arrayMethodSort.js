@@ -5,11 +5,24 @@
  */
 function applyCustomSort() {
   [].__proto__.sort2 = function (compareFunction) {
-    for (let i = 0; i < this.length; i++) {
-      for (let j = 0; j < this.length - 1; j++) {
+    if (
+      compareFunction !== undefined &&
+      typeof compareFunction !== 'function'
+    ) {
+      throw new TypeError(
+        'The comparison function must be either a function or undefined',
+      );
+    }
+
+    let swapped;
+
+    do {
+      swapped = false;
+
+      for (let i = 0; i < this.length - 1; i++) {
+        const a = this[i];
+        const b = this[i + 1];
         let shouldSwap = false;
-        const a = this[j];
-        const b = this[j + 1];
 
         if (compareFunction) {
           if (compareFunction(a, b) > 0) {
@@ -22,14 +35,16 @@ function applyCustomSort() {
         }
 
         if (shouldSwap) {
-          const temp = this[j];
+          const temp = this[i];
 
-          this[j] = this[j + 1];
+          this[i] = this[i + 1];
 
-          this[j + 1] = temp;
+          this[i + 1] = temp;
+
+          swapped = true;
         }
       }
-    }
+    } while (swapped);
 
     return this;
   };
